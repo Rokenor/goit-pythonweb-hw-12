@@ -1,3 +1,5 @@
+"""Маршрути CRUD для контактів поточного користувача."""
+
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -22,7 +24,25 @@ async def read_contacts(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    """Список власних контактів з пагінацією та пошуком за іменем, прізвищем чи email."""
+    """Список власних контактів з пагінацією та пошуком.
+
+    :param skip: скільки записів пропустити.
+    :type skip: int
+    :param limit: максимум записів у відповіді.
+    :type limit: int
+    :param first_name: фільтр за іменем (частковий збіг).
+    :type first_name: str | None
+    :param last_name: фільтр за прізвищем (частковий збіг).
+    :type last_name: str | None
+    :param email: фільтр за електронною адресою (частковий збіг).
+    :type email: str | None
+    :param db: сесія бази даних.
+    :type db: AsyncSession
+    :param user: поточний користувач.
+    :type user: User
+    :return: список контактів.
+    :rtype: List[ContactResponse]
+    """
     contact_service = ContactService(db)
     return await contact_service.get_contacts(
         user, skip, limit, first_name, last_name, email
@@ -35,7 +55,17 @@ async def read_upcoming_birthdays(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    """Контакти, у яких день народження протягом найближчих `days` днів."""
+    """Контакти, у яких день народження протягом найближчих ``days`` днів.
+
+    :param days: розмір вікна в днях, рахуючи від сьогодні.
+    :type days: int
+    :param db: сесія бази даних.
+    :type db: AsyncSession
+    :param user: поточний користувач.
+    :type user: User
+    :return: контакти з найближчими днями народження.
+    :rtype: List[ContactResponse]
+    """
     contact_service = ContactService(db)
     return await contact_service.get_upcoming_birthdays(user, days)
 
@@ -46,6 +76,18 @@ async def read_contact(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    """Повертає один контакт поточного користувача.
+
+    :param contact_id: ідентифікатор контакту.
+    :type contact_id: int
+    :param db: сесія бази даних.
+    :type db: AsyncSession
+    :param user: поточний користувач.
+    :type user: User
+    :raises HTTPException: 404, якщо контакту немає.
+    :return: знайдений контакт.
+    :rtype: ContactResponse
+    """
     contact_service = ContactService(db)
     contact = await contact_service.get_contact(contact_id, user)
     if contact is None:
@@ -61,6 +103,18 @@ async def create_contact(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    """Створює контакт для поточного користувача.
+
+    :param body: дані нового контакту.
+    :type body: ContactModel
+    :param db: сесія бази даних.
+    :type db: AsyncSession
+    :param user: поточний користувач.
+    :type user: User
+    :raises HTTPException: 409, якщо контакт із таким email уже існує.
+    :return: створений контакт.
+    :rtype: ContactResponse
+    """
     contact_service = ContactService(db)
     if await contact_service.get_contact_by_email(body.email, user):
         raise HTTPException(
@@ -77,6 +131,21 @@ async def update_contact(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    """Повністю оновлює контакт поточного користувача.
+
+    :param body: нові значення полів контакту.
+    :type body: ContactModel
+    :param contact_id: ідентифікатор контакту.
+    :type contact_id: int
+    :param db: сесія бази даних.
+    :type db: AsyncSession
+    :param user: поточний користувач.
+    :type user: User
+    :raises HTTPException: 404, якщо контакту немає; 409, якщо email уже
+        зайнятий іншим контактом цього користувача.
+    :return: оновлений контакт.
+    :rtype: ContactResponse
+    """
     contact_service = ContactService(db)
     if await contact_service.get_contact(contact_id, user) is None:
         raise HTTPException(
@@ -97,6 +166,18 @@ async def remove_contact(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    """Видаляє контакт поточного користувача.
+
+    :param contact_id: ідентифікатор контакту.
+    :type contact_id: int
+    :param db: сесія бази даних.
+    :type db: AsyncSession
+    :param user: поточний користувач.
+    :type user: User
+    :raises HTTPException: 404, якщо контакту немає.
+    :return: видалений контакт.
+    :rtype: ContactResponse
+    """
     contact_service = ContactService(db)
     contact = await contact_service.remove_contact(contact_id, user)
     if contact is None:

@@ -10,3 +10,8 @@ __pycache__/
 .idea/
 .vscode/
 reference/
+tests/
+docs/
+test.db
+.coverage
+htmlcov/

@@ -11,3 +11,12 @@ env/
 .vscode/
 *.egg-info/
 reference/
+
+# тести
+test.db
+.coverage
+coverage.xml
+htmlcov/
+
+# Sphinx
+docs/_build/
