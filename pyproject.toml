@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "goit-pythonweb-hw-10"
+version = "0.2.0"
+description = "REST API for storing and managing contacts with JWT auth (FastAPI + SQLAlchemy + PostgreSQL)"
+authors = ["Oleksandr Kovrizhnykh <oleksandr.kovrizhnykh@amo.tech>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = { extras = ["standard"], version = "^0.30.6" }
+sqlalchemy = "^2.0.35"
+alembic = "^1.13.2"
+asyncpg = "^0.29.0"
+greenlet = "^3.1.0"
+pydantic = { extras = ["email"], version = "^2.9.2" }
+pydantic-settings = "^2.5.2"
+python-jose = { extras = ["cryptography"], version = "^3.3.0" }
+passlib = { extras = ["bcrypt"], version = "^1.7.4" }
+bcrypt = "~4.0.1"
+python-multipart = "^0.0.12"
+fastapi-mail = "^1.4.1"
+libgravatar = "^1.0.4"
+cloudinary = "^1.41.0"
+slowapi = "^0.1.9"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
